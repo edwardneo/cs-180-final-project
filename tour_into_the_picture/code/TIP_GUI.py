@@ -13,7 +13,7 @@ def get_corners(top_left, bottom_right):
 
 def tip_gui(im):
     """GUI to get vanishing point, inner rectangle, and outer polygon. First left click
-    twice to select the top right and bottom left corners. Then left click to choose a
+    twice to select the top left and bottom right corners. Then left click to choose a
     vanishing point. You may change the vanishing point by left clicking again. Right
     click when you have selected a satisfactory vanishing point and to close the GUI."""
 

@@ -11,7 +11,7 @@ from warp import rectify
 
 def dist2edges(point, upper_left, bottom_right):
     """Helper function to get distances from point to edges of bounding box defined
-    by upper_left and bottom_right"""
+    by upper_left and bottom_right."""
 
     assert (
         upper_left[0] <= point[0] <= bottom_right[0]
