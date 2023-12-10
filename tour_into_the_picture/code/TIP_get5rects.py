@@ -5,25 +5,28 @@ from find_line_x import find_line_x
 from find_line_y import find_line_y
 
 def tip_get5rects(im, vx, vy, irx, iry, orx, ory):
+    """Gets the coordinates of the five rectangles using the image, vanishing point, inner rectangle, and outer rectangle."""
     ymax, xmax, cdepth = im.shape
+    
+    # Get the margins of the bigger image
     lmargin = -int(np.min(orx))
     rmargin = int(np.max(orx) - xmax)
     tmargin = -int(np.min(ory))
     bmargin = int(np.max(ory) - ymax)
 
+    # Create the bigger image of zeros
     big_im = np.zeros([ymax + tmargin + bmargin, xmax + lmargin + rmargin, cdepth])
     big_im_alpha = np.zeros([big_im.shape[0], big_im.shape[1]])
     big_im[tmargin:ymax + tmargin, lmargin:xmax + lmargin, :] = im
     big_im_alpha[tmargin:ymax + tmargin, lmargin:xmax + lmargin] = 1.0
 
+    # Update the new vanishing point, inner rectangle, and outer rectangle in the bigger image
     vx += lmargin
     vy += tmargin
     irx += lmargin
     iry += tmargin
     orx += lmargin
     ory += tmargin
-
-    # Define the 5 rectangles
 
     # Ceiling
     ceil_rx = [orx[0], orx[1], irx[1], irx[0]]
@@ -65,6 +68,7 @@ def tip_get5rects(im, vx, vy, irx, iry, orx, ory):
         right_ry[2] = np.round(find_line_y(vx, vy, right_rx[2], right_ry[2], right_rx[1]))
         right_rx[2] = right_rx[1]
 
+    # Back
     back_rx, back_ry = irx, iry
 
     return big_im, big_im_alpha, vx, vy, ceil_rx, ceil_ry, floor_rx, floor_ry, left_rx, left_ry, right_rx, right_ry, back_rx, back_ry

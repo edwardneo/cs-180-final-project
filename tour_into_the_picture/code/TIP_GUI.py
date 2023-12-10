@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
-import skimage.io as skio
 
 from find_corner import find_corner
 
@@ -54,7 +53,6 @@ def tip_gui(im):
         plt.clf()
         plt.imshow(im)
         plt.plot(irx, iry, 'b')
-        plt.plot([vx, irx[0]], [vy, iry[0]], 'r-.')
         for ix, iy, ox, oy in zip(irx, iry, orx, ory):
             plt.plot([ox, ix], [oy, iy], 'r')
         plt.pause(0.05)

@@ -1,0 +1,200 @@
+<head>
+  <title>Tour Into the Picture</title>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+</head>
+<body style="display: flex; flex-direction: column; align-items: center; padding: 20px 100px">
+  <h1>Tour Into the Picture</h1>
+  <h2>Starter Code</h2>
+  I converted the MatLab starter code into Python, specifically code/find_corner.py, code/find_line_x.py, code/find_line_y.py, code/TIP_get5rects.py, and code/TIP_GUI.py. The original MatLab starter code can be found in matlab/.
+  I also improved the GUI, allowing users to alter the vanishing point after choosing the back wall. The GUI will show the lines for the box model, so users can update their vanishing point selection in feedback to the lines shown, and confirm their selection by right-clicking.
+
+  <h2>Implementation</h2>
+  To render a 3D box model out of the static 2D image, we first get the back wall and the vanishing point. Then we draw the edges of the box corresponding to the back wall and the vanishing point, splitting the image into five regions: the ceiling, the right wall, the floor, the left wall, and the back wall.
+  <br><br>
+  We then use similar triangles to find the depth of the ceiling, floor, and side walls using the ratio between the vanishing point to the edge of the back wall and the vanishing point to the edge of the image. We also need the focal length of the camera to compute the depth, but a wrong focal length just scales up or down the depth of the 3D model.
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="original_images/similar_triangles.png" width="800" />
+      <p>
+        Similar Triangles in the Box Model (Taken From CS 194-26 Slides): \( \frac{f}{f+d} = \frac{a}{h} \implies d = f(\frac{h}{a} - 1) \)
+      </p>
+    </div>
+    </div>
+  </div>
+  Once finding the depths of the ceiling, floor, and side walls, we then rectify the photos into the sides of the box. We keep the back of the box the same dimensions, and we use this and the depth measurements to get the dimensions of each of the side faces of the box to rectify into. To do so, I used a modified version of my warp script from Project 4 to rectify images.
+  <br><br>
+  Finally, we construct the 3D model of the box by painting MatPlotLib surfaces. Because 3D rendering the surfaces in MatPlotLib is very inefficient, some of the below images use a sampling rate to paint the sides of the box using every few pixels instead of every pixel.
+
+  <h2>Results</h2>
+  <h3>Saint Jerome Painting</h3>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="original_images/sjerome.jpg" width="400" />
+      <p>
+        Original Image
+      </p>
+    </div>
+  </div>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/painting_vanishing.png" width="400" />
+      <p>
+        Image Alignment with Back Wall and Vanshing Point
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/painting_5_rects.png" width="400" />
+      <p>
+        Five Regions to Rectify into Box
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/painting_flattened.png" width="400" />
+      <p>
+        Flattened Image of Back Wall, Floor, Ceiling, and Side Walls Rectified
+      </p>
+    </div>
+  </div>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/painting_3d.png" width="400" />
+      <p>
+        3D Box From the Outside
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/painting_1.png" width="400" />
+      <p>
+        Novel Viewpoint 1
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/painting_2.png" width="400" />
+      <p>
+        Novel Viewpoint 2
+      </p>
+    </div>
+  </div>
+
+  <h3>Oxford</h3>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="original_images/Oxford.jpg" width="400" />
+      <p>
+        Original Image
+      </p>
+    </div>
+  </div>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/oxford_vanishing.png" width="400" />
+      <p>
+        Image Alignment with Back Wall and Vanshing Point
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/oxford_5_rects.png" width="400" />
+      <p>
+        Five Regions to Rectify into Box
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/oxford_flattened.png" width="400" />
+      <p>
+        Flattened Image of Back Wall, Floor, Ceiling, and Side Walls Rectified
+      </p>
+    </div>
+  </div>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/oxford_3d.png" width="400" />
+      <p>
+        3D Box From the Outside
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/oxford_1.png" width="400" />
+      <p>
+        Novel Viewpoint 1
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/oxford_2.png" width="400" />
+      <p>
+        Novel Viewpoint 2
+      </p>
+    </div>
+  </div>
+
+  <h3>Bedroom</h3>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="original_images/aesthetic-room-decor.jpg" width="400" />
+      <p>
+        Original Image
+      </p>
+    </div>
+  </div>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/room_vanishing.png" width="400" />
+      <p>
+        Image Alignment with Back Wall and Vanshing Point
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/room_5_rects.png" width="400" />
+      <p>
+        Five Regions to Rectify into Box
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/room_flattened.png" width="400" />
+      <p>
+        Flattened Image of Back Wall, Floor, Ceiling, and Side Walls Rectified
+      </p>
+    </div>
+  </div>
+  <div style="display: flex; align-self: center; flex-direction: row; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/room_3d.png" width="400" />
+      <p>
+        3D Box From the Outside
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/room_1.png" width="400" />
+      <p>
+        Novel Viewpoint 1
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px">
+      <img src="images/room_2.png" width="400" />
+      <p>
+        Novel Viewpoint 2
+      </p>
+    </div>
+  </div>
+
+  <h2>Bells and Whistles</h2>
+  I converted the MatLab starter code into Python and created an improved GUI that allows users to update their choice of vanishing point. This is described more in depth in 'Starter Code.'
+
+  <h2>What have you learned?</h2>
+  The coolest thing I learned was how to find the dimensions of the sides of the box, rectify into those shapes, then paint the surface.
+</body>

@@ -2,6 +2,9 @@ from find_line_x import find_line_x
 from find_line_y import find_line_y
 
 def find_corner(vx, vy, rx, ry, limitx, limity):
+    """Finds a 'corner' of the bigger image given the vanishing point,
+    the rectangle corner, and the boundary limits."""
+
     x1, y1 = find_line_x(vx, vy, rx, ry, limity), limity
     x2, y2 = limitx, find_line_y(vx, vy, rx, ry, limitx)
 

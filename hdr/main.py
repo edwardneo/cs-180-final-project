@@ -15,10 +15,10 @@ def main():
     # PARSE ARGUMENTS
     # ===============================
     arg_parser = argparse.ArgumentParser(description="CS1290: Project 2 - HDR")
-    arg_parser.add_argument("-d", "--dir", type=str, default="../data/arch",
+    arg_parser.add_argument("-d", "--dir", type=str, default="./data/arch",
                             help='''Image set to perform HDR tone mapping on. This can either
                             be a full path to the directory of exposure images, or the name of
-                            a folder in ../data/''')
+                            a folder in ./data/''')
     arg_parser.add_argument("-l", "--lambda", type=float, default=50.0,
                             help="Lambda smoothing factor (default: 50.0).")
     arg_parser.add_argument("-o", "--out", type=str, default="./results/",
