@@ -69,7 +69,7 @@ def solve_g(Z, B, l, w):
 
 
 
-def hdr(file_names, g_red, g_green, g_blue, w, exposure_matrix, nr_exposures, to_align = True):
+def hdr(file_names, g_red, g_green, g_blue, w, exposure_matrix, nr_exposures, to_align = False):
     """
     Given the imaging system's response function g (per channel), a weighting function
     for pixel intensity values, and an exposure matrix containing the log shutter
