@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def poly2mask(vertex_row_coords, vertex_col_coords, shape):
+    """Creates a binary mask from polygon vertex coordinates."""
     fill_row_coords, fill_col_coords = draw.polygon(vertex_row_coords, vertex_col_coords, shape)
     mask = np.zeros(shape, dtype=bool)
     mask[fill_row_coords, fill_col_coords] = True
@@ -10,6 +11,7 @@ def poly2mask(vertex_row_coords, vertex_col_coords, shape):
 
 
 def specify_bottom_center(img):
+    """GUI to specify target bottom-center location."""
     print("If it doesn't get you to the drawing mode, then rerun this function again. Also, make sure the object fill fit into the background image. Otherwise it will crash")
     fig = plt.figure()
     plt.imshow(img, cmap='gray')
@@ -25,6 +27,7 @@ def specify_bottom_center(img):
     return target_loc
 
 def align_source(object_img, mask, background_img, bottom_center):
+    """Aligns the object and the background."""
     ys, xs = np.where(mask == 1)
     (h,w,_) = object_img.shape
     y1 = x1 = 0
@@ -64,6 +67,7 @@ def upper_left_background_rc(object_mask, bottom_center):
     return [upper_left_row, upper_left_col]
 
 def crop_object_img(object_img, object_mask):
+    """Gets the excess zero margins in the mask and crops it off the image and the mask."""
     ys, xs = np.where(object_mask == 1)
     (h,w) = object_mask.shape[:2]
     x1 = min(xs)-1
@@ -75,6 +79,7 @@ def crop_object_img(object_img, object_mask):
     return object_img, object_mask
 
 def get_combined_img(bg_img, object_img, object_mask, bg_ul):
+    """Combines the two images."""
     combined_img = bg_img.copy()
     (nr, nc) = object_img.shape[:2]
 
@@ -87,6 +92,7 @@ def get_combined_img(bg_img, object_img, object_mask, bg_ul):
 
 
 def specify_mask(img):
+    """GUI to trace the polygon border around the mask."""
     # get mask
     print("If it doesn't get you to the drawing mode, then rerun this function again.")
     fig = plt.figure()
@@ -114,6 +120,7 @@ def specify_mask(img):
     return clicked
 
 def get_mask(ys, xs, img):
+    """Gets the mask from the polygon vertex coordinates and displays it."""
     mask = poly2mask(ys, xs, img.shape[:2]).astype(int)
     fig = plt.figure()
     plt.imshow(mask, cmap='gray')
