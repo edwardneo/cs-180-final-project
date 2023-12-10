@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+import sys
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ def main():
     # Make sure input directory exists
     directory = args.dir
     if not os.path.isdir(directory):
-        directory = os.path.join("../", os.path.join("data", directory))
+        directory = os.path.join("./", os.path.join("data", directory))
         if not os.path.isdir(directory):
             print("Directory does not exist!")
             sys.exit(1)
@@ -85,7 +86,7 @@ def main():
 
     plt.figure(figsize=(13, 6))
 
-    rad_map = np.log(hdr_radiance_map+1)
+    rad_map = np.log(hdr_radiance_map+0.001)
     mean_rad_map = rad_map.mean(axis=-1)
 
     plt.subplot(1, 2, 1)

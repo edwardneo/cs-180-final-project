@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    
+    <title>Gradient Domain Fusion</title>
+    <style>
+        /* Add some basic styling here if you'd like */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+        }	
+	.image-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin: 10px;
+        }
+
+        img {
+            max-width: 60%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>High Dynamic Range</h1>
+
+    <p>I used the provided starter code from https://browncsci1290.github.io/webpage/projects/hdr/. In this project, we reconstruct an image based on multiple exposures of the same image, based on the paper "Recovering High Dynamic Range Radiance Maps from Photographs" (Debevec and Malik, 1997).</p> 
+    
+      <h2>Part 1. Compute Inverse Function </h2>
+    
+      <p>We use a least squares formulation to estimate the function to map from pixels to radiance values. We set up a series of equations of the form \(ln(E_i) = g(Z_{ij}) - ln(\delta t_j)\). 
+        In order to motivate g to be smooth, we also add a regularizing constraint of the form \(\lambda[g(x-1)w(x-1) + g(x+1)x(i+1) - 2g(x)w(x)] = 0\). 
+        Now, we just solve using least squares, and extract the relevant variables from the solution.
+
+      </p>
+    <img src="./results/gvalues.png">
+      <p>Estimated g_values for the bonsai images.</p>
+    
+      <h2>Part 2. Construcing the HDR Radiance Map. </h2>
+    
+      <p>  Now that we solved for the g values, we can calculate the radiances. 
+        The equation is \(lnE_i = [\sum_j w(Z_{ij}(g(Z_{ij} - ln \delta t_j)))]/[\sum_j w(Z_{ij})]\)
+        This was implemented using batched operations for speed. Also, the values for which the sum of w was 0 were ignored. 
+        Also, I had to use this code cv2.cvtColor(cv2.imread(file_names[k]), cv2.COLOR_BGR2RGB) to get the images. plt wouldn't work with chapel, and cv2.imread by itself switched up red and blue. 
+      </p>
+      
+      <div class="image-container">
+              <img src="./results/mean.png">
+              <img src="./results/radiance.png">            
+      </div>
+      <p>The averaged and clipped radiance maps for the bonsai images.</p>
+    
+    
+      <h2>Part 3. Global Tone Blending. </h2>
+    
+      <p>  
+        With the radiance values, we can reconstruct the image with a global tone mapping operator, such as \(E / (1+E)\). 
+      </p>
+      
+      <div class="image-container">
+              <img src="./results/simple.png">
+              <img src="./results/glob.png">            
+      </div>
+      <p>The simple and global tone mappings.</p>
+
+      <h2>Part 4. Local Tone Blending. </h2>
+    
+      <p>  
+        For more satisfying results, we can use local tone blending, where we implement a simplified version of the Durand method, as described in the project spec.
+        I used the hyperparameters dR=4.0, d=5, sigmaColor=15, sigmaSpace=15, gamma = 0.5. 
+      </p>
+      
+      <div class="image-container">
+              <img src="./results/bonsai.png">
+              <img src="./results/chapel.png">       
+              <img src="./results/arch.png">       
+      </div>
+      <div class="image-container">
+        <img src="./results/garage.png">
+        <img src="./results/garden.png">       
+        <img src="./results/house.png">       
+    </div>
+    <div class="image-container">
+      <img src="./results/mug.png">
+      <img src="./results/window.png">       
+    </div>
+      <p>Results for all test images.</p>
+
+      <h2>Bells and Whisltes: Alignment . </h2>
+    
+      <p>  
+        As you can tell, the images for the garden were not perfectly aligned, thus the reconstruction was bad. We can recycle the implentation of color channel alignment from project 1, and tweak it to be useful  here.
+        The algorithm is pretty much the exact same, using SSD as a distance metric, and an image pyramid to speed up computation. Instead of alining channels, the different images themselves were aligned to one base image.
+      </p>
+      
+      <div class="image-container">
+              <img src="./results/garden.png">
+              <img src="./results/garden_align.png">            
+      </div>
+      <p>Garden vs garden w alignment. It is more aligned. I'm not sure where the orange stuff is coming from.</p>
+    
+    
+    
+
+    
+</body>
+</html>

@@ -30,7 +30,8 @@ def create_sample_matrix(file_names, nr_pixels, nr_exposures):
     """
 
     nr_samples = int(np.ceil(255. / (nr_exposures - 1)))
-    random_sample_indices = np.random.randint(nr_pixels, size=(nr_samples), seed=1290)
+    np.random.seed(129)
+    random_sample_indices = np.random.randint(nr_pixels, size=(nr_samples))
 
     # allocate resulting matrices
     sample_matrix = np.zeros((nr_samples, nr_exposures, 3), dtype=np.uint8)
