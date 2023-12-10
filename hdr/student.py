@@ -69,7 +69,7 @@ def solve_g(Z, B, l, w):
 
 
 
-def hdr(file_names, g_red, g_green, g_blue, w, exposure_matrix, nr_exposures, to_align = False):
+def hdr(file_names, g_red, g_green, g_blue, w, exposure_matrix, nr_exposures, to_align = True):
     """
     Given the imaging system's response function g (per channel), a weighting function
     for pixel intensity values, and an exposure matrix containing the log shutter
@@ -94,8 +94,15 @@ def hdr(file_names, g_red, g_green, g_blue, w, exposure_matrix, nr_exposures, to
     im_shape = cv2.imread(file_names[0]).shape
     gs = [g_red, g_green, g_blue]
     p = len(file_names)
-    
-    images = np.array([cv2.cvtColor(cv2.imread(file_names[k]), cv2.COLOR_BGR2RGB) / 255.0 for k in range(p)])
+    if not to_align:
+        images = np.array([cv2.cvtColor(cv2.imread(file_names[k]), cv2.COLOR_BGR2RGB) / 255.0 for k in range(p)])
+    else:
+        temp = np.array([cv2.cvtColor(cv2.imread(file_names[k]), cv2.COLOR_BGR2RGB) / 255.0 for k in range(p)])
+        images = temp.copy()
+        src = images[0]
+        for i in range(1, len(images)):
+            pr = pyramid(src,temp[i])
+            images[i] = align(temp[i], pr)
 
     r, c, _ = im_shape
 
@@ -173,3 +180,60 @@ def tm_durand(hdr_radiance_map, dR=4.0, d=5, sc=15, ss=15, gamma = 0.5):
 
     return result
 
+
+# ========================================================================
+# Bells and Whistles Align
+# ========================================================================
+
+
+def metric(reference, tofix):
+    sizex, sizey, z = reference.shape
+    cropx, cropy = int(sizex/10), int(sizey/10)
+    
+    return -(np.sum((reference[cropx:-cropx, cropy:-cropy,:]-tofix[cropx:-cropx, cropy:-cropy,:])**2))
+    #
+def find_position(reference, tofix, cx, cy, it):
+    
+    max_metric = metric(reference, tofix)
+    position = (0,0)
+    for i in range(cx -it, cx + it):
+        temp = np.roll(tofix, i, axis = 0)
+        for j in range(cy -it, cy + it):
+            shifted = np.roll(temp, j, axis = 1)
+            curr = metric(reference,shifted)
+            if curr > max_metric:
+                max_metric = curr
+                position = (i,j)
+    #print(max_metric)
+    return position
+def find_position_full(reference, tofix):
+    max_metric = metric(reference, tofix)
+    position = (0,0)
+    for i in range(reference.shape[0]):
+        temp = np.roll(tofix, i, axis = 0)
+        for j in range(reference.shape[1]):
+            shifted = np.roll(temp, j, axis = 1)
+            curr = metric(reference,shifted)
+            if curr > max_metric:
+                max_metric = curr
+                position = (i,j)
+    #print(max_metric)
+    return position
+    
+
+def align(image, position):
+    temp = np.roll(image, position[0], axis = 0)
+    return np.roll(temp, position[1], axis = 1)
+
+def pyramid(reference, tofix):
+    x,y, z = reference.shape
+    it = 10
+    if x > 20 or y > 20:
+        res_r = resize(reference, (x/2, y/2, z))
+        res_t = resize(tofix,(x/2, y/2, z))
+        cx, cy = pyramid(res_r, res_t)
+        cx *= 2
+        cy *= 2
+        return find_position(reference, tofix, cx, cy, it)
+    else:
+        return find_position_full(reference, tofix)
